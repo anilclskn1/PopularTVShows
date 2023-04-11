@@ -1,0 +1,6 @@
+framework module Pods_PopularTVShows_PopularTVShowsUITests {
+  umbrella header "Pods-PopularTVShows-PopularTVShowsUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
