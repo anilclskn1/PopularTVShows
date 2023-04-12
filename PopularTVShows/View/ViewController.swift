@@ -45,16 +45,34 @@ class ViewController: UIViewController {
         view.addSubview(tableView)
 
     }
+    
+    private func createSpinnerFooter() -> UIView{
+        let footerView = UIView(frame: CGRect(x: 0,
+                                              y: 0,
+                                              width: Int(view.frame.size.width),
+                                              height: 100))
+        let spinner = UIActivityIndicatorView()
+        spinner.center = footerView.center
+        footerView.addSubview(spinner)
+        spinner.startAnimating()
+        
+        return footerView
+    }
 }
 
 extension ViewController: TVShowsListViewModelDelegate {
     func didLoadMoreTVShows() {
        
-
+        for show in viewModel.tvShows {
+            self.shows.append(TVShowForTableView(title: show.name ?? "", rating: show.popularity ?? 0, isFavorite: false, image: show.posterPath ?? ""))
+            print(show)
+        }
     }
     
     func didRefreshTVShows() {
-        
+        for show in viewModel.tvShows {
+            self.shows.append(TVShowForTableView(title: show.name ?? "", rating: show.popularity ?? 0, isFavorite: false, image: show.posterPath ?? ""))
+        }
     }
     
     func didFailToLoadTVShows(error: Error) {
@@ -67,7 +85,6 @@ extension ViewController: TVShowsListViewModelDelegate {
       
         for show in viewModel.tvShows {
             self.shows.append(TVShowForTableView(title: show.name ?? "", rating: show.popularity ?? 0, isFavorite: false, image: show.posterPath ?? ""))
-            print(show)
         }
         DispatchQueue.main.async {
             self.tableView.reloadData()
@@ -91,9 +108,11 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let position = scrollView.contentOffset.y
-        if position > tableView.contentSize.height - 100{
+        if position > tableView.contentSize.height - 100 - scrollView.frame.size.height{
             //fetch more data
-            print("fetch more")
+            self.tableView.tableFooterView = createSpinnerFooter()
+            viewModel.loadMoreTVShows()
+
         }
     }
 }

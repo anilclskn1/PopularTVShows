@@ -33,6 +33,7 @@ class TVShowsListViewModel {
     }
     
     func loadTVShows() {
+        guard !apiClient.isPaginating else { return }
         guard !isLoading else { return }
         isLoading = true
         apiClient.getPopularTVShows(page: currentPage) { [weak self] result in
@@ -51,6 +52,7 @@ class TVShowsListViewModel {
     }
     
     func loadMoreTVShows() {
+        guard !apiClient.isPaginating else { return }
         guard !isLoading, currentPage <= totalPages else { return }
         isLoading = true
         apiClient.getPopularTVShows(page: currentPage) { [weak self] result in
@@ -68,6 +70,7 @@ class TVShowsListViewModel {
     }
     
     func refreshTVShows() {
+        guard !apiClient.isPaginating else { return }
         guard !isRefreshing else { return }
         isRefreshing = true
         apiClient.getPopularTVShows(page: 1) { [weak self] result in
@@ -90,8 +93,9 @@ class TVShowsListViewModel {
     }
     
     func isTVShowFavorite(_ tvShow: TVListResult) -> Bool {
-        return favoriteTVShows.contains(tvShow)
+        return favoriteTVShows.contains { $0.id == tvShow.id }
     }
+
     
     func addToFavorites(_ tvShow: TVListResult) {
         favoriteTVShows.append(tvShow)
@@ -99,10 +103,11 @@ class TVShowsListViewModel {
     }
     
     func removeFromFavorites(_ tvShow: TVListResult) {
-        guard let index = favoriteTVShows.firstIndex(of: tvShow) else { return }
+        guard let index = favoriteTVShows.firstIndex(where: { $0.id == tvShow.id }) else { return }
         favoriteTVShows.remove(at: index)
         dataRepository.deleteFavoriteTVShow(tvShow)
     }
+
     
     func getTVShowsCount() -> Int {
         return tvShows.count

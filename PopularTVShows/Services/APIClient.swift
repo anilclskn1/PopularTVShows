@@ -16,6 +16,7 @@ enum APIError: Error {
 
 class APIClient {
     
+    var isPaginating = false
     let baseURL: URL
     let apiKey: String
     
@@ -24,7 +25,10 @@ class APIClient {
         self.apiKey = apiKey
     }
     
-    func getPopularTVShows(page: Int, completion: @escaping (Result<TVListResponse, APIError>) -> Void) {
+    func getPopularTVShows(pagination: Bool = false, page: Int, completion: @escaping (Result<TVListResponse, APIError>) -> Void) {
+        if pagination {
+            isPaginating = true
+        }
         let endpoint = "/3/tv/popular"
         let url = buildURL(endpoint: endpoint, queryItems: [
             URLQueryItem(name: "api_key", value: apiKey),
@@ -56,6 +60,7 @@ class APIClient {
 
             do {
                 let tvShowsResponse = try decoder.decode(TVListResponse.self, from: data)
+                print(tvShowsResponse)
                 completion(.success(tvShowsResponse))
             } catch {
                 completion(.failure(.decodingFailed(error)))
@@ -65,6 +70,9 @@ class APIClient {
         }
         
         task.resume()
+        if pagination {
+            self.isPaginating = false
+        }
     }
     
     private func buildURL(endpoint: String, queryItems: [URLQueryItem]) -> URL {
