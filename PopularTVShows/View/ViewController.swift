@@ -7,12 +7,12 @@
 
 import UIKit
 import Swinject
+import SDWebImage
 
 class ViewController: UIViewController {
     
     private var viewModel: TVShowsListViewModel!
     let container = Container()
-    var shows: [TVShowForTableView] = []
     var tableView: UITableView!
 
 
@@ -62,48 +62,47 @@ class ViewController: UIViewController {
 
 extension ViewController: TVShowsListViewModelDelegate {
     func didLoadMoreTVShows() {
-       
-        for show in viewModel.tvShows {
-            self.shows.append(TVShowForTableView(title: show.name ?? "", rating: show.popularity ?? 0, isFavorite: false, image: show.posterPath ?? ""))
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-                self.tableView.tableFooterView = nil
-            }
+      
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
         }
     }
+
+
+
     
     func didRefreshTVShows() {
-        for show in viewModel.tvShows {
-            self.shows.append(TVShowForTableView(title: show.name ?? "", rating: show.popularity ?? 0, isFavorite: false, image: show.posterPath ?? ""))
-        }
+      
     }
     
     func didFailToLoadTVShows(error: Error) {
-        print(error)
-        print("kkk")
+        print(error.localizedDescription)
     }
     
     func didLoadTVShows() {
             // Do something with the list of TV shows
       
-        for show in viewModel.tvShows {
-            self.shows.append(TVShowForTableView(title: show.name ?? "", rating: show.popularity ?? 0, isFavorite: false, image: show.posterPath ?? ""))
-        }
+     
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
+        
     }
 
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return shows.count
+        return viewModel.getTVShowsCount()
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! TVShowCell
-        let show = shows[indexPath.row]
-        cell.configure(with: show)
+        let show = viewModel.getTVShow(at: indexPath.row)
+        cell.titleLabel.text = show.name
+        cell.showImageView.sd_setImage(with: URL(string: "https://image.tmdb.org/t/p/w92\(show.posterPath ?? "")"))
+        cell.ratingLabel.text = "Rating: \(show.voteAverage?.formatted() ?? "")/10"
+        cell.favoriteIcon.isHidden = true
+        
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -116,5 +115,15 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
             self.tableView.tableFooterView = createSpinnerFooter()
             viewModel.loadMoreTVShows()
         }
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedItem = viewModel.tvShows[indexPath.row]
+        let vc = DetailsViewController()
+        let tvShow = viewModel.getTVShow(at: indexPath.row)
+        
+        vc.selectedID = tvShow.id ?? -1
+        vc.selectedTitle = selectedItem.name ?? ""
+        vc.selectedImageURL = "https://image.tmdb.org/t/p/w500\(selectedItem.posterPath ?? "")"
+        present(vc, animated: true)
     }
 }

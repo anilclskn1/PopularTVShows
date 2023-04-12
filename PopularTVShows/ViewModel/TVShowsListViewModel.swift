@@ -52,7 +52,6 @@ class TVShowsListViewModel {
     
     func loadMoreTVShows() {
         guard !apiClient.isPaginating else { return }
-        print("ftis")
         guard !isLoading, currentPage <= totalPages else { return }
         isLoading = true
         apiClient.getPopularTVShows(pagination: true, page: currentPage) { [weak self] result in

@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SDWebImage
 
 class TVShowCell: UITableViewCell {
     var titleLabel: UILabel = {
@@ -24,7 +25,7 @@ class TVShowCell: UITableViewCell {
     }()
     
     var favoriteIcon: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "favorite_icon"))
+        let imageView = UIImageView(image: UIImage(systemName: "heart.fill"))
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
@@ -73,10 +74,4 @@ class TVShowCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(with show: TVShowForTableView) {
-        showImageView.image = .actions
-        titleLabel.text = show.title
-        ratingLabel.text = "Rating: \(show.rating)/10"
-        favoriteIcon.isHidden = !show.isFavorite
-    }
 }

@@ -7,7 +7,7 @@ target 'APICaller' do
 
   # Pods for APICaller
 pod 'Swinject'
-
+pod 'SDWebImage', '~> 5.0'
 
   target 'APICallerTests' do
     # Pods for testing
