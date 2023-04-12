@@ -65,7 +65,10 @@ extension ViewController: TVShowsListViewModelDelegate {
        
         for show in viewModel.tvShows {
             self.shows.append(TVShowForTableView(title: show.name ?? "", rating: show.popularity ?? 0, isFavorite: false, image: show.posterPath ?? ""))
-            print(show)
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+                self.tableView.tableFooterView = nil
+            }
         }
     }
     
@@ -112,7 +115,6 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
             //fetch more data
             self.tableView.tableFooterView = createSpinnerFooter()
             viewModel.loadMoreTVShows()
-
         }
     }
 }
