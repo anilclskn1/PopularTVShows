@@ -8,50 +8,49 @@
 import UIKit
 import Swinject
 
-
-
 class ViewController: UIViewController {
     
     private var viewModel: TVShowsListViewModel!
-       let container = Container()
+    let container = Container()
+    var shows: [TVShowForTableView] = []
+    var tableView: UITableView!
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-       /* let apiClient = APIClient(baseURL: URL(string: "https://api.themoviedb.org/3")!)
-        let tvShowsRepository = TVShowsRepository()
-        let viewModel = TVShowsListViewModel(apiClient: apiClient, dataRepository: tvShowsRepository)
         
-        viewModel.delegate = self
-        viewModel.loadTVShows()*/
-
         container.register(APIClient.self) { _ in
-            APIClient(baseURL: URL(string: "https://api.themoviedb.org/3")!)
-               }
-               
-               container.register(TVShowsRepository.self) { _ in
-                   TVShowsRepository()
-               }
-               
-               container.register(TVShowsListViewModel.self) { r in
-                   let apiClient = r.resolve(APIClient.self)!
-                   let dataRepository = r.resolve(TVShowsRepository.self)!
-                   let viewModel = TVShowsListViewModel(apiClient: apiClient, dataRepository: dataRepository)
-                   viewModel.delegate = self
-                   return viewModel
-               }
-               
-               viewModel = container.resolve(TVShowsListViewModel.self)!
+            APIClient(baseURL: URL(string: "https://api.themoviedb.org/3")!, apiKey: "eec13a24107da841b9dbd0efa01346bf")
+        }
+        
+        container.register(TVShowsRepository.self) { _ in
+            TVShowsRepository()
+        }
+        
+        container.register(TVShowsListViewModel.self) { r in
+            let dataRepository = r.resolve(TVShowsRepository.self)!
+            let apiClient = r.resolve(APIClient.self)!
+            let viewModel = TVShowsListViewModel(apiClient: apiClient, dataRepository: dataRepository)
+            viewModel.delegate = self
+            return viewModel
+        }
+        
+        viewModel = container.resolve(TVShowsListViewModel.self)!
         viewModel.loadTVShows()
+        
+        tableView = UITableView(frame: view.bounds, style: .plain)
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(TVShowCell.self, forCellReuseIdentifier: "cell")
+        view.addSubview(tableView)
 
     }
-
-
 }
 
 extension ViewController: TVShowsListViewModelDelegate {
     func didLoadMoreTVShows() {
-        
+       
+
     }
     
     func didRefreshTVShows() {
@@ -59,13 +58,42 @@ extension ViewController: TVShowsListViewModelDelegate {
     }
     
     func didFailToLoadTVShows(error: Error) {
-        print(error.localizedDescription)
+        print(error)
+        print("kkk")
     }
     
     func didLoadTVShows() {
-        print("a")
+            // Do something with the list of TV shows
+      
+        for show in viewModel.tvShows {
+            self.shows.append(TVShowForTableView(title: show.name ?? "", rating: show.popularity ?? 0, isFavorite: false, image: show.posterPath ?? ""))
+            print(show)
+        }
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
     }
-    
-    // Implement other delegate methods as needed
+
 }
 
+extension ViewController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return shows.count
+    }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! TVShowCell
+        let show = shows[indexPath.row]
+        cell.configure(with: show)
+        return cell
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100.0
+    }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let position = scrollView.contentOffset.y
+        if position > tableView.contentSize.height - 100{
+            //fetch more data
+            print("fetch more")
+        }
+    }
+}

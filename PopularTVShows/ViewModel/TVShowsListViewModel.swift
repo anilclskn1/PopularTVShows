@@ -22,8 +22,8 @@ class TVShowsListViewModel {
     private var totalPages = 1
     private var isLoading = false
     private var isRefreshing = false
-    private var tvShows: [TVShow] = []
-    private var favoriteTVShows: [TVShow] = []
+    var tvShows: [TVListResult] = []
+    private var favoriteTVShows: [TVListResult] = []
     
     weak var delegate: TVShowsListViewModelDelegate?
     
@@ -40,8 +40,8 @@ class TVShowsListViewModel {
             self.isLoading = false
             switch result {
             case .success(let response):
-                self.tvShows.append(contentsOf: response.tvShows)
-                self.totalPages = response.totalPages
+                self.tvShows.append(contentsOf: response.results!)
+                self.totalPages = response.totalPages ?? 0
                 self.currentPage += 1
                 self.delegate?.didLoadTVShows()
             case .failure(let error):
@@ -58,7 +58,7 @@ class TVShowsListViewModel {
             self.isLoading = false
             switch result {
             case .success(let response):
-                self.tvShows.append(contentsOf: response.tvShows)
+                self.tvShows.append(contentsOf: response.results!)
                 self.currentPage += 1
                 self.delegate?.didLoadMoreTVShows()
             case .failure(let error):
@@ -75,8 +75,8 @@ class TVShowsListViewModel {
             self.isRefreshing = false
             switch result {
             case .success(let response):
-                self.tvShows = response.tvShows
-                self.totalPages = response.totalPages
+                self.tvShows = response.results!
+                self.totalPages = response.totalPages ?? 0
                 self.currentPage = 2
                 self.delegate?.didRefreshTVShows()
             case .failure(let error):
@@ -85,20 +85,20 @@ class TVShowsListViewModel {
         }
     }
     
-    func getTVShow(at index: Int) -> TVShow {
+    func getTVShow(at index: Int) -> TVListResult {
         return tvShows[index]
     }
     
-    func isTVShowFavorite(_ tvShow: TVShow) -> Bool {
+    func isTVShowFavorite(_ tvShow: TVListResult) -> Bool {
         return favoriteTVShows.contains(tvShow)
     }
     
-    func addToFavorites(_ tvShow: TVShow) {
+    func addToFavorites(_ tvShow: TVListResult) {
         favoriteTVShows.append(tvShow)
         dataRepository.saveFavoriteTVShow(tvShow)
     }
     
-    func removeFromFavorites(_ tvShow: TVShow) {
+    func removeFromFavorites(_ tvShow: TVListResult) {
         guard let index = favoriteTVShows.firstIndex(of: tvShow) else { return }
         favoriteTVShows.remove(at: index)
         dataRepository.deleteFavoriteTVShow(tvShow)

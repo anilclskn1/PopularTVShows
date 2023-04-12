@@ -16,26 +16,26 @@ class TVShowsRepository {
         self.userDefaults = userDefaults
     }
     
-    func saveFavoriteTVShow(_ tvShow: TVShow) {
+    func saveFavoriteTVShow(_ tvShow: TVListResult) {
         var favoriteTVShows = getFavoriteTVShows()
         favoriteTVShows.append(tvShow)
         saveFavoriteTVShows(favoriteTVShows)
     }
     
-    func deleteFavoriteTVShow(_ tvShow: TVShow) {
+    func deleteFavoriteTVShow(_ tvShow: TVListResult) {
         var favoriteTVShows = getFavoriteTVShows()
         guard let index = favoriteTVShows.firstIndex(of: tvShow) else { return }
         favoriteTVShows.remove(at: index)
         saveFavoriteTVShows(favoriteTVShows)
     }
     
-    func getFavoriteTVShows() -> [TVShow] {
+    func getFavoriteTVShows() -> [TVListResult] {
         guard let data = userDefaults.data(forKey: favoriteTVShowsKey) else { return [] }
-        guard let favoriteTVShows = try? PropertyListDecoder().decode([TVShow].self, from: data) else { return [] }
+        guard let favoriteTVShows = try? PropertyListDecoder().decode([TVListResult].self, from: data) else { return [] }
         return favoriteTVShows
     }
     
-    private func saveFavoriteTVShows(_ favoriteTVShows: [TVShow]) {
+    private func saveFavoriteTVShows(_ favoriteTVShows: [TVListResult]) {
         guard let data = try? PropertyListEncoder().encode(favoriteTVShows) else { return }
         userDefaults.set(data, forKey: favoriteTVShowsKey)
     }

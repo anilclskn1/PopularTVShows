@@ -17,37 +17,32 @@ enum APIError: Error {
 class APIClient {
     
     let baseURL: URL
+    let apiKey: String
     
-    init(baseURL: URL) {
+    init(baseURL: URL, apiKey: String) {
         self.baseURL = baseURL
+        self.apiKey = apiKey
     }
     
-    func getPopularTVShows(page: Int, completion: @escaping (Result<TVShowsResponse, APIError>) -> Void) {
-        let endpoint = "/tv/popular?api_key=972c9e3f0c7a3f8310c159d1e73fcd13"
-        let url = URL(string: "\(baseURL)\(endpoint)")!
+    func getPopularTVShows(page: Int, completion: @escaping (Result<TVListResponse, APIError>) -> Void) {
+        let endpoint = "/3/tv/popular"
+        let url = buildURL(endpoint: endpoint, queryItems: [
+            URLQueryItem(name: "api_key", value: apiKey),
+            URLQueryItem(name: "language", value: "en-US"),
+            URLQueryItem(name: "page", value: String(page))
+        ])
         print(url)
         
-        var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
-        urlComponents?.queryItems = [
-            URLQueryItem(name: "page", value: String(page))
-        ]
-        
-        guard let finalURL = urlComponents?.url else {
-            completion(.failure(.invalidURL))
-            return
-        }
-
-        let task = URLSession.shared.dataTask(with: finalURL) { (data, response, error) in
+        let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let error = error {
                 completion(.failure(.requestFailed(error)))
                 return
             }
-            
 
+            
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 print(response.debugDescription)
                 completion(.failure(.invalidResponse))
-                
                 return
             }
 
@@ -58,17 +53,24 @@ class APIClient {
 
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
-            
+
             do {
-                let tvShowsResponse = try decoder.decode(TVShowsResponse.self, from: data)
-                print(tvShowsResponse.tvShows)
+                let tvShowsResponse = try decoder.decode(TVListResponse.self, from: data)
                 completion(.success(tvShowsResponse))
             } catch {
                 completion(.failure(.decodingFailed(error)))
+                print(error.localizedDescription)
+
             }
         }
         
         task.resume()
     }
     
+    private func buildURL(endpoint: String, queryItems: [URLQueryItem]) -> URL {
+        var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)!
+        urlComponents.path = endpoint
+        urlComponents.queryItems = queryItems
+        return urlComponents.url!
+    }
 }
