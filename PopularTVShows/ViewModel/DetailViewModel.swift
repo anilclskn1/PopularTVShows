@@ -34,8 +34,8 @@ class DetailViewModel {
         episodeRunTime: [30, 45],
         firstAirDate: "2021-01-01",
         genres: [
-            Genre(id: 1, name: "Comedy"),
-            Genre(id: 2, name: "Drama")
+            Genre(id: 1, name: ""),
+            Genre(id: 2, name: "")
         ],
         homepage: "https://example.com",
         inProduction: true,
@@ -123,6 +123,7 @@ class DetailViewModel {
             case .success(let response):
                 self.tvShowDetail.numberOfEpisodes = response.numberOfEpisodes ?? -1
                 self.tvShowDetail.numberOfSeasons = response.numberOfSeasons ?? -1
+                self.tvShowDetail.genres =  response.genres ?? []
                 self.delegate?.didLoadDetails()
             case .failure(let error):
                 self.delegate?.didFailToLoadDetails(error: error)

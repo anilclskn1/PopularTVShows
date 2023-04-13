@@ -11,6 +11,7 @@ import SDWebImage
 
 class ViewController: UIViewController {
     
+    private var favorites: TVShowsRepository!
     private var viewModel: TVShowsListViewModel!
     let container = Container()
     var tableView: UITableView!
@@ -23,9 +24,13 @@ class ViewController: UIViewController {
             APIClient(baseURL: URL(string: "https://api.themoviedb.org/3")!, apiKey: "eec13a24107da841b9dbd0efa01346bf")
         }
         
-        container.register(TVShowsRepository.self) { _ in
-            TVShowsRepository()
+        container.register(TVShowsRepository.self) { r in
+            let viewModel = TVShowsRepository(userDefaults: .standard)
+            return viewModel
         }
+        
+        favorites = container.resolve(TVShowsRepository.self)!
+        print("favorites.getFavoriteTVShows(): \(favorites.getFavoriteTVShows())")
         
         container.register(TVShowsListViewModel.self) { r in
             let dataRepository = r.resolve(TVShowsRepository.self)!
@@ -43,6 +48,7 @@ class ViewController: UIViewController {
         tableView.delegate = self
         tableView.register(TVShowCell.self, forCellReuseIdentifier: "cell")
         view.addSubview(tableView)
+        
 
     }
     
@@ -100,7 +106,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         let show = viewModel.getTVShow(at: indexPath.row)
         cell.titleLabel.text = show.name
         cell.showImageView.sd_setImage(with: URL(string: "https://image.tmdb.org/t/p/w92\(show.posterPath ?? "")"))
-        cell.ratingLabel.text = "Rating: \(show.voteAverage?.formatted() ?? "")/10"
+        cell.ratingLabel.text = "Rating: \(show.voteAverage?.formatted() ?? "-")/10"
         cell.favoriteIcon.isHidden = true
         
         return cell
@@ -121,6 +127,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         let vc = DetailsViewController()
         vc.selectedID = selectedItem.id ?? -1
         vc.selectedTitle = selectedItem.name ?? ""
+        //vc.selectedTVShow = selectedItem
         vc.selectedImageURL = "https://image.tmdb.org/t/p/w500\(selectedItem.posterPath ?? "")"
         present(vc, animated: true)
     }

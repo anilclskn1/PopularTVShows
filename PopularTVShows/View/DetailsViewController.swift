@@ -12,11 +12,15 @@ import Swinject
 class DetailsViewController: UIViewController {
     
     private var viewModel: DetailViewModel!
+    private var favoriteViewModel: TVShowsRepository!
     let container = Container()
     var isFavorite: Bool = false
     var selectedID = -1
     var selectedTitle = ""
     var selectedImageURL = ""
+    //var selectedTVShow =  TVListResult(posterPath: "", popularity: 0.0, id: 0, backdropPath: "", voteAverage: 0.0, overview: "", firstAirDate: "", originCountry: [], genreIds: [], originalLanguage: "", voteCount: 0, name: "", originalName: "")
+
+
     
     let titleLabel: UILabel = {
         let label = UILabel()
@@ -52,7 +56,7 @@ class DetailsViewController: UIViewController {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         label.numberOfLines = 0
-        label.textColor = .lightGray
+        label.textColor = .lightText
         label.textAlignment = .center
         return label
     }()
@@ -61,7 +65,7 @@ class DetailsViewController: UIViewController {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         label.numberOfLines = 0
-        label.textColor = .darkGray
+        label.textColor = .lightText
         label.textAlignment = .center
         return label
     }()
@@ -97,8 +101,23 @@ class DetailsViewController: UIViewController {
         
         viewModel = container.resolve(DetailViewModel.self)!
         viewModel.loadDetails()
+        
+        
+        container.register(TVShowsRepository.self) { r in
+            let viewModel = TVShowsRepository(userDefaults: .standard)
+            return viewModel
+        }
+        
+        favoriteViewModel = container.resolve(TVShowsRepository.self)!
+        print(favoriteViewModel.getFavoriteTVShows())
+        
     }
     
+    @objc func didTapFavorite(){
+        //favoriteViewModel.saveFavoriteTVShow(selectedTVShow)
+        //print(favoriteViewModel.getFavoriteTVShows())
+    }
+
  
         
     private func setupUI() {
@@ -132,7 +151,8 @@ class DetailsViewController: UIViewController {
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = bgImageView.bounds
         blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
+        favoriteButton.addTarget(self, action: #selector(didTapFavorite), for: .touchUpInside)
+
 
         bgImageView.addSubview(blurEffectView)
         

@@ -17,7 +17,7 @@ struct TVShowDetailsResponse: Codable {
     let profilePath: String?
     let episodeRunTime: [Int]?
     let firstAirDate: String?
-    let genres: [Genre]?
+    var genres: [Genre]?
     let homepage: String?
     let inProduction: Bool?
     let languages: [String]?
