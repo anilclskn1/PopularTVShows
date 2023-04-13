@@ -41,6 +41,9 @@
 		731904A429E60D3D0066CE96 /* TVShowsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731904A329E60D3D0066CE96 /* TVShowsRepository.swift */; };
 		731904A629E6F1C80066CE96 /* TVShowCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731904A529E6F1C80066CE96 /* TVShowCell.swift */; };
 		731904AA29E71D1B0066CE96 /* DetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731904A929E71D1B0066CE96 /* DetailsViewController.swift */; };
+		731904AC29E729970066CE96 /* TVShowsDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731904AB29E729970066CE96 /* TVShowsDetail.swift */; };
+		731904AE29E72A450066CE96 /* DetailAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731904AD29E72A450066CE96 /* DetailAPIClient.swift */; };
+		731904B029E888C00066CE96 /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731904AF29E888C00066CE96 /* DetailViewModel.swift */; };
 		86AD38A00C8FFBF9884227F7 /* Pods_PopularTVShowsTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53FD918379A3E3A9AC001386 /* Pods_PopularTVShowsTests.framework */; };
 		884165EBD4F3EC1AA5AD0E7E /* Pods_APIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D2BE4796879851E71560B81 /* Pods_APIKit.framework */; };
 		DFF35DF6F8B4540698C1FC49 /* Pods_PopularTVShows_PopularTVShowsUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66A5672580D4C1AAB35C5D01 /* Pods_PopularTVShows_PopularTVShowsUITests.framework */; };
@@ -186,6 +189,9 @@
 		731904A329E60D3D0066CE96 /* TVShowsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVShowsRepository.swift; sourceTree = "<group>"; };
 		731904A529E6F1C80066CE96 /* TVShowCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVShowCell.swift; sourceTree = "<group>"; };
 		731904A929E71D1B0066CE96 /* DetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailsViewController.swift; sourceTree = "<group>"; };
+		731904AB29E729970066CE96 /* TVShowsDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVShowsDetail.swift; sourceTree = "<group>"; };
+		731904AD29E72A450066CE96 /* DetailAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailAPIClient.swift; sourceTree = "<group>"; };
+		731904AF29E888C00066CE96 /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
 		742DACD4DF17A63BAC5D8B6D /* Pods_MyAppUIKit_MyAppUIKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyAppUIKit_MyAppUIKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7AD9A7C8770E53C5AA81424C /* Pods-MyAppUIKit-MyAppUIKitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyAppUIKit-MyAppUIKitTests.release.xcconfig"; path = "Target Support Files/Pods-MyAppUIKit-MyAppUIKitTests/Pods-MyAppUIKit-MyAppUIKitTests.release.xcconfig"; sourceTree = "<group>"; };
 		7B56799445083DD3D611CCFF /* Pods-APICaller-APICallerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-APICaller-APICallerTests.release.xcconfig"; path = "Target Support Files/Pods-APICaller-APICallerTests/Pods-APICaller-APICallerTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -428,6 +434,7 @@
 			isa = PBXGroup;
 			children = (
 				7319049E29E60C990066CE96 /* TVShow.swift */,
+				731904AB29E729970066CE96 /* TVShowsDetail.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -437,6 +444,7 @@
 			children = (
 				7319049C29E60C400066CE96 /* TVShowsListViewModel.swift */,
 				731904A329E60D3D0066CE96 /* TVShowsRepository.swift */,
+				731904AF29E888C00066CE96 /* DetailViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -445,6 +453,7 @@
 			isa = PBXGroup;
 			children = (
 				731904A129E60CC20066CE96 /* APIClient.swift */,
+				731904AD29E72A450066CE96 /* DetailAPIClient.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1034,6 +1043,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				731904AC29E729970066CE96 /* TVShowsDetail.swift in Sources */,
 				731904A429E60D3D0066CE96 /* TVShowsRepository.swift in Sources */,
 				7319040629E5F9EE0066CE96 /* PopularTVShows.xcdatamodeld in Sources */,
 				731904A629E6F1C80066CE96 /* TVShowCell.swift in Sources */,
@@ -1041,6 +1051,8 @@
 				731904A229E60CC20066CE96 /* APIClient.swift in Sources */,
 				7319049D29E60C400066CE96 /* TVShowsListViewModel.swift in Sources */,
 				7319049F29E60C990066CE96 /* TVShow.swift in Sources */,
+				731904AE29E72A450066CE96 /* DetailAPIClient.swift in Sources */,
+				731904B029E888C00066CE96 /* DetailViewModel.swift in Sources */,
 				7319040029E5F9EE0066CE96 /* ViewController.swift in Sources */,
 				731903FC29E5F9EE0066CE96 /* AppDelegate.swift in Sources */,
 				731903FE29E5F9EE0066CE96 /* SceneDelegate.swift in Sources */,

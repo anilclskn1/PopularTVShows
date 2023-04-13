@@ -119,9 +119,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedItem = viewModel.tvShows[indexPath.row]
         let vc = DetailsViewController()
-        let tvShow = viewModel.getTVShow(at: indexPath.row)
-        
-        vc.selectedID = tvShow.id ?? -1
+        vc.selectedID = selectedItem.id ?? -1
         vc.selectedTitle = selectedItem.name ?? ""
         vc.selectedImageURL = "https://image.tmdb.org/t/p/w500\(selectedItem.posterPath ?? "")"
         present(vc, animated: true)
