@@ -24,7 +24,7 @@ class TVShowsRepository {
     
     func deleteFavoriteTVShow(_ tvShow: TVListResult) {
         var favoriteTVShows = getFavoriteTVShows()
-        guard let index = favoriteTVShows.firstIndex(where: { $0.id == tvShow.id }) else { return }
+        guard let index = favoriteTVShows.firstIndex(where: { $0.name == tvShow.name }) else { return }
         favoriteTVShows.remove(at: index)
         saveFavoriteTVShows(favoriteTVShows)
     }

@@ -30,7 +30,6 @@ class APIClient {
                 if pagination {
                     self?.isPaginating = true
                 }
-                print("sssssss")
                 let endpoint = "/3/tv/popular"
                 let url = self?.buildURL(endpoint: endpoint, queryItems: [
                     URLQueryItem(name: "api_key", value: self?.apiKey),
@@ -61,7 +60,6 @@ class APIClient {
 
                     do {
                         let tvShowsResponse = try decoder.decode(TVListResponse.self, from: data)
-                        print(tvShowsResponse)
                         completion(.success(tvShowsResponse))
                     } catch {
                         completion(.failure(.decodingFailed(error)))

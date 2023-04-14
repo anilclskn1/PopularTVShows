@@ -18,7 +18,9 @@ class DetailsViewController: UIViewController {
     var selectedID = -1
     var selectedTitle = ""
     var selectedImageURL = ""
-    //var selectedTVShow =  TVListResult(posterPath: "", popularity: 0.0, id: 0, backdropPath: "", voteAverage: 0.0, overview: "", firstAirDate: "", originCountry: [], genreIds: [], originalLanguage: "", voteCount: 0, name: "", originalName: "")
+    var selectedTVShow =  TVListResult(posterPath: "", popularity: 0.0, id: 0, backdropPath: "", voteAverage: 0.0, overview: "", firstAirDate: "", originCountry: [], genreIds: [], originalLanguage: "", voteCount: 0, name: "", originalName: "")
+    weak var delegate: FavoriteTVShowsDelegate?
+    var selectedIndexPath = 0
 
 
     
@@ -26,7 +28,6 @@ class DetailsViewController: UIViewController {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 20)
         label.numberOfLines = 0
-        label.text = "Title"
         label.textAlignment = .center
         return label
     }()
@@ -73,7 +74,6 @@ class DetailsViewController: UIViewController {
     let favoriteButton: UIButton = {
         let button = UIButton()
         button.setTitleColor(.black, for: .normal)
-        button.setTitle("Add Favorite", for: .normal)
         button.layer.borderColor = UIColor.black.cgColor
         button.layer.cornerRadius = 25
         button.backgroundColor = .white
@@ -85,7 +85,6 @@ class DetailsViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
-        print(selectedID)
         container.register(DetailAPIClient.self) { _ in
             DetailAPIClient(baseURL: URL(string: "https://api.themoviedb.org")!, apiKey: "eec13a24107da841b9dbd0efa01346bf")
         }
@@ -109,16 +108,31 @@ class DetailsViewController: UIViewController {
         }
         
         favoriteViewModel = container.resolve(TVShowsRepository.self)!
-        print(favoriteViewModel.getFavoriteTVShows())
+
+
+        if !isFavorite {
+            favoriteButton.setTitle("Add Favorite", for: UIControl.State.normal)
+            favoriteViewModel.saveFavoriteTVShow(selectedTVShow)
+        } else {
+            favoriteButton.setTitle("Delete Favorite", for: UIControl.State.normal)
+            favoriteViewModel.deleteFavoriteTVShow(selectedTVShow)
+        }
         
     }
     
     @objc func didTapFavorite(){
-        //favoriteViewModel.saveFavoriteTVShow(selectedTVShow)
-        //print(favoriteViewModel.getFavoriteTVShows())
+        if favoriteButton.titleLabel?.text == "Delete Favorite" {
+            favoriteButton.setTitle("Add Favorite", for: UIControl.State.normal)
+            favoriteViewModel.deleteFavoriteTVShow(selectedTVShow)
+        } else {
+            favoriteButton.setTitle("Delete Favorite", for: UIControl.State.normal)
+            favoriteViewModel.saveFavoriteTVShow(selectedTVShow)
+        }
+        delegate?.didUpdateFavoriteTVShows(index: selectedIndexPath)
     }
 
- 
+   
+
         
     private func setupUI() {
         view.addSubview(titleLabel)
@@ -204,9 +218,7 @@ extension DetailsViewController: DetailViewModelDelegate{
                     self.seasonsLabel.text = "\(numOfSeasons) Seasons"
                     let genreNames = genres.compactMap { $0.name }
                     let joinedNames = genreNames.joined(separator: ", ")
-                    print(joinedNames)
                     self.genreLabel.text = joinedNames
-                    print(genres)
                 }
             }
         
@@ -217,5 +229,10 @@ extension DetailsViewController: DetailViewModelDelegate{
         print(error.localizedDescription)
     }
     
+   
     
+}
+
+protocol FavoriteTVShowsDelegate: AnyObject {
+    func didUpdateFavoriteTVShows(index: Int)
 }

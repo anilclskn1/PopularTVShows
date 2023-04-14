@@ -30,7 +30,9 @@ class ViewController: UIViewController {
         }
         
         favorites = container.resolve(TVShowsRepository.self)!
-        print("favorites.getFavoriteTVShows(): \(favorites.getFavoriteTVShows())")
+        
+
+
         
         container.register(TVShowsListViewModel.self) { r in
             let dataRepository = r.resolve(TVShowsRepository.self)!
@@ -50,8 +52,11 @@ class ViewController: UIViewController {
         view.addSubview(tableView)
         
 
+       
+
     }
     
+
     private func createSpinnerFooter() -> UIView{
         let footerView = UIView(frame: CGRect(x: 0,
                                               y: 0,
@@ -107,8 +112,11 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         cell.titleLabel.text = show.name
         cell.showImageView.sd_setImage(with: URL(string: "https://image.tmdb.org/t/p/w92\(show.posterPath ?? "")"))
         cell.ratingLabel.text = "Rating: \(show.voteAverage?.formatted() ?? "-")/10"
-        cell.favoriteIcon.isHidden = true
-        
+        let isFavorite = favorites.getFavoriteTVShows().contains { favoriteShow in
+            return favoriteShow.name == show.name
+        }
+
+        cell.favoriteIcon.isHidden = !isFavorite
         return cell
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -125,10 +133,28 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedItem = viewModel.tvShows[indexPath.row]
         let vc = DetailsViewController()
+        print(indexPath.row)
         vc.selectedID = selectedItem.id ?? -1
         vc.selectedTitle = selectedItem.name ?? ""
-        //vc.selectedTVShow = selectedItem
+        vc.selectedTVShow = selectedItem
+        let isFavorite = favorites.getFavoriteTVShows().contains { favoriteShow in
+            return favoriteShow.name == selectedItem.name
+        }
+        vc.selectedIndexPath = indexPath.row
+        vc.isFavorite = isFavorite
         vc.selectedImageURL = "https://image.tmdb.org/t/p/w500\(selectedItem.posterPath ?? "")"
+        vc.delegate = self
         present(vc, animated: true)
     }
+}
+
+extension ViewController: FavoriteTVShowsDelegate{
+    func didUpdateFavoriteTVShows(index: Int) {
+        let updatedIndexPath = IndexPath(row: index, section: 0)
+        self.tableView.reloadRows(at: [updatedIndexPath], with: .fade)
+        print("girfdiii")
+    }
+
+    
+    
 }

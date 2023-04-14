@@ -30,33 +30,27 @@ class DetailAPIClient {
             URLQueryItem(name: "api_key", value: apiKey),
             URLQueryItem(name: "language", value: "en-US")
         ])
-        print("1")
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
             if let error = error {
                 completion(.failure(.requestFailed(error)))
                 return
             }
-            print("11")
 
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 completion(.failure(.invalidResponse))
                 return
             }
-            print("111")
 
             guard let data = data else {
                 completion(.failure(.invalidResponse))
                 return
             }
-            print("1111")
-
 
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
 
             do {
                 let tvShowResponse = try decoder.decode(TVShowDetailsResponse.self, from: data)
-                print("tvShowResponse: \(tvShowResponse)")
                 completion(.success(tvShowResponse))
             } catch {
                 completion(.failure(.decodingFailed(error)))
