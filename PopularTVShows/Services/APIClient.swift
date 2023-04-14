@@ -26,56 +26,56 @@ class APIClient {
     }
     
     func getPopularTVShows(pagination: Bool = false, page: Int, completion: @escaping (Result<TVListResponse, APIError>) -> Void) {
-            DispatchQueue.global().asyncAfter(deadline: .now() + (pagination ? 2 : 0), execute: { [weak self] in
-                if pagination {
-                    self?.isPaginating = true
+        DispatchQueue.global().asyncAfter(deadline: .now() + (pagination ? 2 : 0), execute: { [weak self] in
+            if pagination {
+                self?.isPaginating = true
+            }
+            let endpoint = "/3/tv/popular"
+            let url = self?.buildURL(endpoint: endpoint, queryItems: [
+                URLQueryItem(name: "api_key", value: self?.apiKey),
+                URLQueryItem(name: "language", value: "en-US"),
+                URLQueryItem(name: "page", value: String(page))
+            ])
+            
+            let task = URLSession.shared.dataTask(with: url!) { (data, response, error) in
+                if let error = error {
+                    completion(.failure(.requestFailed(error)))
+                    return
                 }
-                let endpoint = "/3/tv/popular"
-                let url = self?.buildURL(endpoint: endpoint, queryItems: [
-                    URLQueryItem(name: "api_key", value: self?.apiKey),
-                    URLQueryItem(name: "language", value: "en-US"),
-                    URLQueryItem(name: "page", value: String(page))
-                ])
                 
-                let task = URLSession.shared.dataTask(with: url!) { (data, response, error) in
-                    if let error = error {
-                        completion(.failure(.requestFailed(error)))
-                        return
-                    }
-
+                
+                guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                    print(response.debugDescription)
+                    completion(.failure(.invalidResponse))
+                    return
+                }
+                
+                guard let data = data else {
+                    completion(.failure(.invalidResponse))
+                    return
+                }
+                
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                
+                do {
+                    let tvShowsResponse = try decoder.decode(TVListResponse.self, from: data)
+                    completion(.success(tvShowsResponse))
+                } catch {
+                    completion(.failure(.decodingFailed(error)))
+                    print(error.localizedDescription)
                     
-                    guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-                        print(response.debugDescription)
-                        completion(.failure(.invalidResponse))
-                        return
-                    }
-
-                    guard let data = data else {
-                        completion(.failure(.invalidResponse))
-                        return
-                    }
-
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-                    do {
-                        let tvShowsResponse = try decoder.decode(TVListResponse.self, from: data)
-                        completion(.success(tvShowsResponse))
-                    } catch {
-                        completion(.failure(.decodingFailed(error)))
-                        print(error.localizedDescription)
-
-                    }
                 }
-                
-                task.resume()
-                if pagination {
-                    self?.isPaginating = false
-                }
-            })
-           
-        }
-
+            }
+            
+            task.resume()
+            if pagination {
+                self?.isPaginating = false
+            }
+        })
+        
+    }
+    
     
     private func buildURL(endpoint: String, queryItems: [URLQueryItem]) -> URL {
         var urlComponents = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)!

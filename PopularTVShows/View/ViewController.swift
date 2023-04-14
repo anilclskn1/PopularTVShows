@@ -15,8 +15,8 @@ class ViewController: UIViewController {
     private var viewModel: TVShowsListViewModel!
     let container = Container()
     var tableView: UITableView!
-
-
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -31,8 +31,8 @@ class ViewController: UIViewController {
         
         favorites = container.resolve(TVShowsRepository.self)!
         
-
-
+        
+        
         
         container.register(TVShowsListViewModel.self) { r in
             let dataRepository = r.resolve(TVShowsRepository.self)!
@@ -51,12 +51,12 @@ class ViewController: UIViewController {
         tableView.register(TVShowCell.self, forCellReuseIdentifier: "cell")
         view.addSubview(tableView)
         
-
-       
-
+        
+        
+        
     }
     
-
+    
     private func createSpinnerFooter() -> UIView{
         let footerView = UIView(frame: CGRect(x: 0,
                                               y: 0,
@@ -73,17 +73,17 @@ class ViewController: UIViewController {
 
 extension ViewController: TVShowsListViewModelDelegate {
     func didLoadMoreTVShows() {
-      
+        
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
     }
-
-
-
+    
+    
+    
     
     func didRefreshTVShows() {
-      
+        
     }
     
     func didFailToLoadTVShows(error: Error) {
@@ -91,15 +91,15 @@ extension ViewController: TVShowsListViewModelDelegate {
     }
     
     func didLoadTVShows() {
-            // Do something with the list of TV shows
-      
-     
+        // Do something with the list of TV shows
+        
+        
         DispatchQueue.main.async {
             self.tableView.reloadData()
         }
         
     }
-
+    
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
@@ -115,7 +115,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
         let isFavorite = favorites.getFavoriteTVShows().contains { favoriteShow in
             return favoriteShow.name == show.name
         }
-
+        
         cell.favoriteIcon.isHidden = !isFavorite
         return cell
     }
@@ -133,7 +133,6 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedItem = viewModel.tvShows[indexPath.row]
         let vc = DetailsViewController()
-        print(indexPath.row)
         vc.selectedID = selectedItem.id ?? -1
         vc.selectedTitle = selectedItem.name ?? ""
         vc.selectedTVShow = selectedItem
@@ -152,9 +151,5 @@ extension ViewController: FavoriteTVShowsDelegate{
     func didUpdateFavoriteTVShows(index: Int) {
         let updatedIndexPath = IndexPath(row: index, section: 0)
         self.tableView.reloadRows(at: [updatedIndexPath], with: .fade)
-        print("girfdiii")
     }
-
-    
-    
 }

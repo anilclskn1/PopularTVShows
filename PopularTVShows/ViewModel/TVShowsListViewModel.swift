@@ -32,6 +32,8 @@ class TVShowsListViewModel {
         self.dataRepository = dataRepository
     }
     
+    
+    
     func loadTVShows() {
         guard !isLoading else { return }
         isLoading = true
@@ -93,7 +95,7 @@ class TVShowsListViewModel {
     func isTVShowFavorite(_ tvShow: TVListResult) -> Bool {
         return favoriteTVShows.contains { $0.id == tvShow.id }
     }
-
+    
     
     func addToFavorites(_ tvShow: TVListResult) {
         favoriteTVShows.append(tvShow)
@@ -105,7 +107,7 @@ class TVShowsListViewModel {
         favoriteTVShows.remove(at: index)
         dataRepository.deleteFavoriteTVShow(tvShow)
     }
-
+    
     
     func getTVShowsCount() -> Int {
         return tvShows.count
